@@ -206,10 +206,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controller.PurdaReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
-	}).SetupWithManager(mgr); err != nil {
+	purdaController := controller.New(mgr.GetClient(), mgr.GetScheme())
+	if err = purdaController.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Purda")
 		os.Exit(1)
 	}

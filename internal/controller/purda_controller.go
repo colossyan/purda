@@ -25,19 +25,31 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	purdav1alpha1 "colossyan.com/purda/api/v1alpha1"
+
+	"colossyan.com/purda/internal/repository"
 )
 
 // PurdaReconciler reconciles a Purda object
 type PurdaReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
+
+	syncer repository.Syncer
+}
+
+func New(client client.Client, scheme *runtime.Scheme) *PurdaReconciler {
+	config := getConfig()
+
+	return &PurdaReconciler{
+		Client: client,
+		Scheme: scheme,
+		syncer: repository.New(context.Background(), config.Token),
+	}
 }
 
 // +kubebuilder:rbac:groups=purda.colossyan.com,resources=purda,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=purda.colossyan.com,resources=purda/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=purda.colossyan.com,resources=purda/finalizers,verbs=update
-// +kubebuilder:rbac:groups="",resources=secrets,verbs=get;list;watch;create;update;delete;patch
-// +kubebuilder:rbac:groups=helm.toolkit.fluxcd.io,resources=helmreleases,verbs=get;list;watch;create;update;delete;patch
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -49,9 +61,12 @@ type PurdaReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.20.0/pkg/reconcile
 func (r *PurdaReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	logger := log.FromContext(ctx)
+	// Enriching context with namespace and name
+	ctx = context.WithValue(ctx, "namespace", req.NamespacedName.Namespace)
+	ctx = context.WithValue(ctx, "name", req.NamespacedName.Name)
 
-	logger.Info("reconciling Purda", "namespace", req.NamespacedName.Namespace, "name", req.NamespacedName.Name)
+	logger := log.FromContext(ctx)
+	logger.Info("reconciling Purda")
 
 	return ctrl.Result{}, nil
 }

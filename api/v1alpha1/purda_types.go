@@ -26,8 +26,19 @@ type PurdaSpec struct {
 	// CommonSpec is the common settings for all targets
 	CommonSpec CommonSpec `json:"commonSpec"`
 
+	// RepositorySpec is the configuration for the git repository
+	RepositorySpec RepositorySpec `json:"repositorySpec"`
+
 	// Target is the target resource to be reconciled
 	Target Target `json:"target"`
+}
+
+type RepositorySpec struct {
+	// Owner is the owner of the repository
+	Owner string `json:"owner"`
+
+	// Name is the name of the repository
+	Name string `json:"name"`
 }
 
 type CommonSpec struct{}
