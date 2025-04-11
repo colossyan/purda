@@ -1,0 +1,9 @@
+apiVersion: purda.colossyan.com/v1alpha1
+kind: Purda
+metadata:
+  labels:
+    app.kubernetes.io/name: purda
+    app.kubernetes.io/managed-by: kustomize
+  name: purda-sample
+spec:
+  # TODO(user): Add fields here
