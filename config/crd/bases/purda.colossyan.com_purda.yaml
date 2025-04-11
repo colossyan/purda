@@ -39,10 +39,30 @@ spec:
           spec:
             description: PurdaSpec defines the desired state of Purda.
             properties:
-              valueOverrides:
-                description: ValueOverrides is a map of key-value pairs to be used
-                  as overrides for the HelmRelease
-                x-kubernetes-preserve-unknown-fields: true
+              commonSpec:
+                description: CommonSpec is the common settings for all targets
+                type: object
+              target:
+                description: Target is the target resource to be reconciled
+                properties:
+                  helmDeploy:
+                    description: HelmDeploy is the configuration on how to deploy
+                      a Helm chart
+                    properties:
+                      sourcePath:
+                        description: |-
+                          SourcePath is the path to the helm chart in the repository.
+                          This is usually the /charts directory in the repository.
+                        type: string
+                      valuesOverride:
+                        description: ValuesOverride is a JSON patch to be applied
+                          to the HelmRelease values
+                        x-kubernetes-preserve-unknown-fields: true
+                    type: object
+                type: object
+            required:
+            - commonSpec
+            - target
             type: object
           status:
             description: PurdaStatus defines the observed state of Purda.

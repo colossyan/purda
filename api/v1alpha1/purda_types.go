@@ -23,8 +23,27 @@ import (
 
 // PurdaSpec defines the desired state of Purda.
 type PurdaSpec struct {
-	// ValueOverrides is a map of key-value pairs to be used as overrides for the HelmRelease
-	ValueOverrides *apiextensionsv1.JSON `json:"valueOverrides,omitempty"`
+	// CommonSpec is the common settings for all targets
+	CommonSpec CommonSpec `json:"commonSpec"`
+
+	// Target is the target resource to be reconciled
+	Target Target `json:"target"`
+}
+
+type CommonSpec struct{}
+
+type Target struct {
+	// HelmDeploy is the configuration on how to deploy a Helm chart
+	HelmDeploy *HelmDeploy `json:"helmDeploy,omitempty"`
+}
+
+type HelmDeploy struct {
+	// SourcePath is the path to the helm chart in the repository.
+	// This is usually the /charts directory in the repository.
+	SourcePath *string `json:"sourcePath,omitempty"`
+
+	// ValuesOverride is a JSON patch to be applied to the HelmRelease values
+	ValuesOverride *apiextensionsv1.JSON `json:"valuesOverride,omitempty"`
 }
 
 // PurdaStatus defines the observed state of Purda.
